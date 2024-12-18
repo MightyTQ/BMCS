@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -17,6 +17,7 @@ const TIME_SLOTS = Array.from({ length: 12 * 4 }, (_, i) => {
 
 type Course = {
   class_id: number;
+  course_code: string;
   title: string;
   description: string;
   credits: string;
@@ -36,12 +37,72 @@ type CourseBlock = {
   overlapIndex?: number;
 };
 
+type Message = {
+  id: string;
+  content: string;
+  sender: 'user' | 'system';
+  timestamp: number;
+};
+
 export default function CourseSchedule({ courses }: { courses: Course[] }) {
   const [selectedCourseIds, setSelectedCourseIds] = useState<number[]>([]);
 
-  const selectedCourses = courses.filter(course => 
-    selectedCourseIds.includes(course.class_id)
-  );
+  const parseCourseCodes = (content: string): string[] => {
+    const regex = /🎓\s*((?:COMPSCI|CS)\s*[A-Z]?\d+[A-Z]*)/g;
+    const matches = content.match(regex);
+    return matches ? matches.map(match => match.replace('🎓 ', '').trim()) : [];
+  };
+
+  const sortCourses = (coursesToSort: Course[]) => {
+    return [...coursesToSort].sort((a, b) => {
+      const getCodeParts = (code: string) => {
+        const match = code.match(/([A-Za-z]+)\s*([A-Z])?(\d+)([A-Z]*)/);
+        if (!match) return { dept: code, prefix: '', num: 0, suffix: '' };
+        const [_, dept, prefix = '', numStr, suffix = ''] = match;
+        return {
+          dept,
+          prefix,
+          num: parseInt(numStr),
+          suffix
+        };
+      };
+
+      const aCode = getCodeParts(a.course_code);
+      const bCode = getCodeParts(b.course_code);
+
+      if (aCode.dept !== bCode.dept) return aCode.dept.localeCompare(bCode.dept);
+      if (aCode.prefix !== bCode.prefix) return aCode.prefix.localeCompare(bCode.prefix);
+      if (aCode.num !== bCode.num) return aCode.num - bCode.num;
+      return aCode.suffix.localeCompare(bCode.suffix);
+    });
+  };
+
+  useEffect(() => {
+    const checkMessages = () => {
+      const savedMessages = localStorage.getItem('chatMessages');
+      if (savedMessages) {
+        const messages: Message[] = JSON.parse(savedMessages);
+        const systemMessages = messages.filter(m => m.sender === 'system');
+        
+        if (systemMessages.length > 0) {
+          const latestMessage = systemMessages[systemMessages.length - 1];
+          const recommendedCourses = parseCourseCodes(latestMessage.content);
+          
+          const courseIds = courses
+            .filter(course => recommendedCourses.some(
+              code => course.course_code.replace(/\s+/g, '') === code.replace(/\s+/g, '')
+            ))
+            .map(course => course.class_id);
+
+          setSelectedCourseIds(courseIds);
+        }
+      }
+    };
+
+    checkMessages();
+    const interval = setInterval(checkMessages, 1000);
+    return () => clearInterval(interval);
+  }, [courses]);
 
   const toggleCourse = (courseId: number) => {
     setSelectedCourseIds(prev => 
@@ -51,13 +112,28 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
     );
   };
 
-  const formatCourseTitle = (title: string) => {
-    const match = title?.match(/([A-Za-z]+)\s*[-]?\s*(\d+[A-Za-z]*)\s*[-]?\s*(.*)/);
-    if (match) {
-      const [_, subject, number, name] = match;
-      return `${subject} ${number} ${name}`;
+  const isCourseFullyEnrolled = (course: Course) => {
+    return course.enrolled >= course.max_enroll;
+  };
+
+  const getCourseStatusColor = (course: Course) => {
+    if (isCourseFullyEnrolled(course) && course.waitlisted > 0) {
+      return 'text-red-600';
     }
-    return title;
+    if (!isCourseFullyEnrolled(course) && course.waitlisted > 0) {
+      return 'text-amber-600';
+    }
+    return '';
+  };
+
+  const formatCourseTitle = (courseCode: string) => {
+    // Preserve special prefixes like 'C' in 'C281'
+    const match = courseCode.match(/([A-Za-z]+)\s*([A-Z])?(\d+[A-Z]*)(.*)/);
+    if (match) {
+      const [_, dept, prefix = '', number, rest] = match;
+      return `${dept} ${prefix}${number}${rest}`.trim();
+    }
+    return courseCode;
   };
 
   const parseTimeToMinutes = (timeStr: string) => {
@@ -83,6 +159,10 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
   const getCourseBlocksForDay = (day: string): CourseBlock[] => {
     const blocks: CourseBlock[] = [];
     
+    const selectedCourses = sortCourses(
+      courses.filter(course => selectedCourseIds.includes(course.class_id))
+    );
+
     selectedCourses.forEach(course => {
       try {
         const courseTimes = course.class_times?.[0];
@@ -113,7 +193,6 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
       }
     });
 
-    // Check for overlaps
     blocks.forEach((block, i) => {
       blocks.forEach((otherBlock, j) => {
         if (i !== j) {
@@ -130,7 +209,7 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
     return blocks;
   };
 
-  const getCourseStyle = (course: Course, hasOverlap: boolean, index: number) => {
+  const getCourseStyle = (course: Course, hasOverlap: boolean) => {
     const styles = [
       'bg-blue-100 border-blue-600',
       'bg-green-100 border-green-600',
@@ -145,15 +224,15 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
     const hash = course.class_id % styles.length;
     const baseStyle = styles[hash];
     
-    if (hasOverlap) {
-      return `${baseStyle} opacity-75 border-2`;
-    }
-    
-    return `${baseStyle} border-l-2`;
+    return hasOverlap 
+      ? `${baseStyle} opacity-75 border-2`
+      : `${baseStyle} border-l-2`;
   };
 
+  const sortedCourses = sortCourses(courses);
+
   return (
-    <Card className="w-full min-w-full">
+    <Card className="w-full">
       <CardHeader className="p-0 border-b">
         <div className="grid grid-cols-6 divide-x border-b">
           <div className="col-span-1"></div>
@@ -171,7 +250,7 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
         <div className="grid grid-cols-[200px_1fr] divide-x">
           <div className="h-[768px] overflow-auto border-r">
             <div className="p-2 space-y-1">
-              {courses.map((course) => (
+              {sortedCourses.map((course) => (
                 <div key={course.class_id} className="flex items-center space-x-2">
                   <Checkbox
                     id={`course-${course.class_id}`}
@@ -181,9 +260,13 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
                   />
                   <label
                     htmlFor={`course-${course.class_id}`}
-                    className="text-[11px] leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className={`text-[11px] leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70 
+                      ${getCourseStatusColor(course)}`}
                   >
-                    {formatCourseTitle(course.title)}
+                    {formatCourseTitle(course.course_code)}
+                    {course.waitlisted > 0 && (
+                      <span className="ml-1">({course.waitlisted} WL)</span>
+                    )}
                   </label>
                 </div>
               ))}
@@ -193,7 +276,7 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
           <div className="grid grid-cols-5 divide-x">
             {DAYS.map((day) => (
               <div key={day} className="col-span-1 relative">
-                {TIME_SLOTS.map((timeSlot, index) => (
+                {TIME_SLOTS.map((_, index) => (
                   <div
                     key={`${day}-${index}`}
                     className="h-4 border-b"
@@ -204,25 +287,31 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
                   const top = block.startIndex * 16;
                   const left = block.hasOverlap ? (idx % 2 ? 4 : 0) : 0;
                   const width = block.hasOverlap ? 'calc(100% - 4px)' : '100%';
+                  const course = block.course;
                   
                   return (
                     <div
-                      key={`${block.course.class_id}-${block.startIndex}`}
-                      className={`absolute ${getCourseStyle(block.course, block.hasOverlap || false, idx)} overflow-hidden hover:shadow-lg transition-shadow`}
+                      key={`${course.class_id}-${block.startIndex}`}
+                      className={`absolute ${getCourseStyle(course, block.hasOverlap || false)} overflow-hidden hover:shadow-lg transition-shadow`}
                       style={{
                         top: `${top}px`,
                         height: `${height}px`,
                         left: `${left}px`,
                         width
                       }}
-                      title={`${block.course.title}\n${block.course.description}\nEnrolled: ${block.course.enrolled}/${block.course.max_enroll}`}
+                      title={`${course.course_code}\n${course.title}\n${course.description}\nEnrolled: ${course.enrolled}/${course.max_enroll}\nWaitlist: ${course.waitlisted}`}
                     >
                       <div className="px-1">
                         <div className="font-medium text-[10px] leading-tight truncate">
-                          {formatCourseTitle(block.course.title)}
+                          {formatCourseTitle(course.course_code)}
                         </div>
                         <div className="text-[8px] leading-tight truncate opacity-75">
-                          {block.course.enrolled}/{block.course.max_enroll}
+                          {course.enrolled}/{course.max_enroll}
+                          {course.waitlisted > 0 && (
+                            <span className="ml-1">
+                              (WL: {course.waitlisted})
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -236,4 +325,3 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
     </Card>
   );
 }
-
