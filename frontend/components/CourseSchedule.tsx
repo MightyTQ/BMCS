@@ -46,11 +46,82 @@ type Message = {
 
 export default function CourseSchedule({ courses }: { courses: Course[] }) {
   const [selectedCourseIds, setSelectedCourseIds] = useState<number[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  const normalizeCourseCode = (code: string): string => {
+    const codeOnly = code.split(':')[0];
+    return codeOnly
+      .replace(/\s+/g, '')
+      .toUpperCase()
+      // Don't replace EECS with CS
+      .replace(/COMPSCI(?=[0-9])/, 'CS');
+  };
 
   const parseCourseCodes = (content: string): string[] => {
-    const regex = /🎓\s*((?:COMPSCI|CS)\s*[A-Z]?\d+[A-Z]*)/g;
-    const matches = content.match(regex);
-    return matches ? matches.map(match => match.replace('🎓 ', '').trim()) : [];
+    // Match both emoji-prefixed and plain course codes for both COMPSCI and EECS
+    const patterns = [
+      /🎓\s*((?:COMPSCI|CS|EECS)\s*[A-Z]?\d+[A-Z]*(?:L[AB])?)/g,  // Emoji format
+      /(?:COMPSCI|CS|EECS)\s*[A-Z]?\d+[A-Z]*(?:L[AB])?/g          // Plain text format
+    ];
+
+    const courseCodes = new Set<string>();
+    patterns.forEach(pattern => {
+      const matches = content.match(pattern);
+      if (matches) {
+        matches.forEach(match => {
+          const cleanCode = match.replace('🎓 ', '').trim();
+          const codeOnly = cleanCode.split(':')[0].trim();
+          courseCodes.add(codeOnly);
+        });
+      }
+    });
+
+    return Array.from(courseCodes);
+  };
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const savedMessages = localStorage.getItem('chatMessages');
+      if (savedMessages) {
+        const parsedMessages: Message[] = JSON.parse(savedMessages);
+        setMessages(parsedMessages);
+      }
+    };
+
+    handleStorageChange();
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    const interval = setInterval(handleStorageChange, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    const systemMessages = messages.filter(m => m.sender === 'system');
+    if (systemMessages.length > 0) {
+      const latestMessage = systemMessages[systemMessages.length - 1];
+      const recommendedCourses = parseCourseCodes(latestMessage.content);
+      
+      const courseIds = courses.filter(course => 
+        recommendedCourses.some(code => 
+          normalizeCourseCode(course.course_code) === normalizeCourseCode(code)
+        )
+      ).map(course => course.class_id);
+
+      setSelectedCourseIds(courseIds);
+    }
+  }, [messages, courses]);
+
+  const toggleCourse = (courseId: number) => {
+    setSelectedCourseIds(prev => 
+      prev.includes(courseId) 
+        ? prev.filter(id => id !== courseId)
+        : [...prev, courseId]
+    );
   };
 
   const sortCourses = (coursesToSort: Course[]) => {
@@ -77,41 +148,6 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
     });
   };
 
-  useEffect(() => {
-    const checkMessages = () => {
-      const savedMessages = localStorage.getItem('chatMessages');
-      if (savedMessages) {
-        const messages: Message[] = JSON.parse(savedMessages);
-        const systemMessages = messages.filter(m => m.sender === 'system');
-        
-        if (systemMessages.length > 0) {
-          const latestMessage = systemMessages[systemMessages.length - 1];
-          const recommendedCourses = parseCourseCodes(latestMessage.content);
-          
-          const courseIds = courses
-            .filter(course => recommendedCourses.some(
-              code => course.course_code.replace(/\s+/g, '') === code.replace(/\s+/g, '')
-            ))
-            .map(course => course.class_id);
-
-          setSelectedCourseIds(courseIds);
-        }
-      }
-    };
-
-    checkMessages();
-    const interval = setInterval(checkMessages, 1000);
-    return () => clearInterval(interval);
-  }, [courses]);
-
-  const toggleCourse = (courseId: number) => {
-    setSelectedCourseIds(prev => 
-      prev.includes(courseId) 
-        ? prev.filter(id => id !== courseId)
-        : [...prev, courseId]
-    );
-  };
-
   const isCourseFullyEnrolled = (course: Course) => {
     return course.enrolled >= course.max_enroll;
   };
@@ -127,7 +163,6 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
   };
 
   const formatCourseTitle = (courseCode: string) => {
-    // Preserve special prefixes like 'C' in 'C281'
     const match = courseCode.match(/([A-Za-z]+)\s*([A-Z])?(\d+[A-Z]*)(.*)/);
     if (match) {
       const [_, dept, prefix = '', number, rest] = match;
@@ -193,6 +228,7 @@ export default function CourseSchedule({ courses }: { courses: Course[] }) {
       }
     });
 
+    // Check for overlaps
     blocks.forEach((block, i) => {
       blocks.forEach((otherBlock, j) => {
         if (i !== j) {

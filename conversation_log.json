@@ -1,151 +1,183 @@
 {
-  "user_input": "I finished compsci 188 and compsci 170 and comsci 61a. I want to explore more foundamental CS courses. could you help me plan my class schedule for next semesterr",
+  "user_input": "Hi I'm a EECS majoring student, I have finished compsci 188 and compsci 170 and comsci 61a. I want to explore more foundamental CS courses. could you help me plan my class schedule for next semester?",
   "available_courses": [
     {
-      "course_id": 16660,
-      "course_code": "COMPSCI 61C",
-      "title": "Great Ideas of Computer Architecture (Machine Structures)",
+      "course_id": 28222,
+      "course_code": "EECS 151",
+      "title": "Introduction to Digital Design and Integrated Circuits",
       "alignment_score": 9,
-      "explanation": "This course covers the internal organization of digital computers, a fundamental aspect of computer science education."
-    },
-    {
-      "course_id": 16178,
-      "course_code": "COMPSCI 61A",
-      "title": "The Structure and Interpretation of Computer Programs",
-      "alignment_score": 9,
-      "explanation": "An introductory course that focuses on fundamental programming principles, important for any computer science background."
-    },
-    {
-      "course_id": 16166,
-      "course_code": "COMPSCI 70",
-      "title": "Discrete Mathematics and Probability Theory",
-      "alignment_score": 9,
-      "explanation": "Covers essential mathematical foundations for computer science, including logic and probability, crucial for further study."
-    },
-    {
-      "course_id": 29209,
-      "course_code": "COMPSCI 186",
-      "title": "Introduction to Database Systems",
-      "alignment_score": 8,
-      "explanation": "Provides a solid foundation in data management principles, an essential topic in computer science.",
+      "explanation": "This course introduces digital design, which is fundamental in computer science, meeting the student's interest.",
       "average_grade": "B+",
       "class_times": [
-        "MoWe 10:00:00-11:29:00"
+        "TuTh 09:30:00-10:59:00"
       ],
-      "enrolled": 440,
-      "max_enroll": 580
+      "enrolled": 116,
+      "max_enroll": 141
     },
     {
-      "course_id": 29195,
-      "course_code": "COMPSCI 161",
-      "title": "Computer Security",
+      "course_id": 28381,
+      "course_code": "EECS 251A",
+      "title": "Introduction to Digital Design and Integrated Circuits",
+      "alignment_score": 9,
+      "explanation": "Offers a top-down approach to large scale digital systems, resonating well with fundamental CS interests.",
+      "average_grade": "A-",
+      "class_times": [
+        "TuTh 09:30:00-10:59:00"
+      ],
+      "enrolled": 26,
+      "max_enroll": 30
+    },
+    {
+      "course_id": 28224,
+      "course_code": "EECS 151LB",
+      "title": "Field-Programmable Gate Array Laboratory",
       "alignment_score": 8,
-      "explanation": "Introduces principles of security in computer systems, a crucial topic given the importance of security in the digital age.",
-      "average_grade": "A",
+      "explanation": "Covers practical digital design, tying well with fundamental concepts in computer science.",
+      "average_grade": "B+",
       "class_times": [
-        "Mo 14:00:00-16:59:00"
+        "We 08:00:00-10:59:00"
       ],
-      "enrolled": 18,
-      "max_enroll": 34
-    },
-    {
-      "course_id": 29489,
-      "course_code": "COMPSCI 198",
-      "title": "Directed Group Studies for Advanced Undergraduates",
-      "alignment_score": 7,
-      "explanation": "Allows students to explore selected topics in depth, fostering a deeper understanding of emerging computer science issues.",
-      "average_grade": "A",
-      "class_times": [
-        "Mo 11:00:00-13:59:00"
-      ],
-      "enrolled": 9,
-      "max_enroll": 9
-    },
-    {
-      "course_id": 29201,
-      "course_code": "COMPSCI 294",
-      "title": "Special Topics",
-      "alignment_score": 7,
-      "explanation": "Covers various current topics in computer science, enabling students to engage with contemporary issues and research.",
-      "average_grade": "A",
-      "class_times": [
-        "Mo 09:00:00-11:59:00"
-      ],
-      "enrolled": 22,
-      "max_enroll": 40
-    },
-    {
-      "course_id": 26580,
-      "course_code": "COMPSCI 289A",
-      "title": "Introduction to Machine Learning",
-      "alignment_score": 7,
-      "explanation": "Focuses on practical applications of machine learning, a relevant and growing area in computer science today."
-    },
-    {
-      "course_id": 29174,
-      "course_code": "COMPSCI 10",
-      "title": "The Beauty and Joy of Computing",
-      "alignment_score": 6,
-      "explanation": "An introductory course that reinforces computer science concepts and programming fundamentals."
+      "enrolled": 17,
+      "max_enroll": 18
     },
     {
       "course_id": 28488,
       "course_code": "EECS 126",
       "title": "Probability and Random Processes",
-      "alignment_score": 6,
-      "explanation": "Covers fundamental concepts useful for data analysis and algorithm development, a growing area in computer science.",
+      "alignment_score": 8,
+      "explanation": "Fulfills fundamental probability concepts important in computer science.",
       "average_grade": "B+",
       "class_times": [
         "TuTh 11:00:00-12:29:00"
       ],
       "enrolled": 155,
       "max_enroll": 157
+    },
+    {
+      "course_id": 28486,
+      "course_code": "EECS 127",
+      "title": "Optimization Models in Engineering",
+      "alignment_score": 8,
+      "explanation": "Introduces models applicable in various computer science areas, fulfilling foundational interests.",
+      "average_grade": "B+",
+      "class_times": [
+        "TuTh 09:30:00-10:59:00"
+      ],
+      "enrolled": 327,
+      "max_enroll": 374
+    },
+    {
+      "course_id": 28519,
+      "course_code": "EECS C106A",
+      "title": "Introduction to Robotics",
+      "alignment_score": 7,
+      "explanation": "Combines multiple fundamental CS principles, including control and algorithms.",
+      "average_grade": "A-",
+      "class_times": [
+        "TuTh 14:00:00-15:29:00"
+      ],
+      "enrolled": 137,
+      "max_enroll": 133
+    },
+    {
+      "course_id": 30880,
+      "course_code": "COMPSCI 264",
+      "title": "Implementation of Programming Languages",
+      "alignment_score": 7,
+      "explanation": "Focuses on essential programming concepts in computer science.",
+      "average_grade": "A-",
+      "class_times": [
+        "MoWe 13:00:00-14:29:00"
+      ],
+      "enrolled": 20,
+      "max_enroll": 30
+    },
+    {
+      "course_id": 29128,
+      "course_code": "COMPSCI 61C",
+      "title": "Great Ideas of Computer Architecture (Machine Structures)",
+      "alignment_score": 7,
+      "explanation": "Introduces key concepts in machine architecture, critical for CS foundations."
+    },
+    {
+      "course_id": 28217,
+      "course_code": "EECS 149",
+      "title": "Introduction to Embedded and Cyber Physical Systems",
+      "alignment_score": 6,
+      "explanation": "Covers foundational concepts in embedded systems important for CS.",
+      "average_grade": "B+",
+      "class_times": [
+        "MoWe 13:00:00-14:29:00"
+      ],
+      "enrolled": 63,
+      "max_enroll": 76
+    },
+    {
+      "course_id": 29488,
+      "course_code": "COMPSCI 198",
+      "title": "Directed Group Studies for Advanced Undergraduates",
+      "alignment_score": 6,
+      "explanation": "Provides an opportunity to explore new developments in CS, which is fundamental.",
+      "average_grade": "B+",
+      "class_times": [
+        "Mo 11:00:00-13:59:00"
+      ],
+      "enrolled": 9,
+      "max_enroll": 10
     }
   ],
   "recommendations": [
     {
-      "course_id": 16660,
-      "course_code": "COMPSCI 61C",
-      "title": "Great Ideas of Computer Architecture (Machine Structures)",
-      "reason": "High alignment score and fundamental content.",
-      "average_grade": "",
+      "course_id": 28381,
+      "course_code": "EECS 251A",
+      "title": "Introduction to Digital Design and Integrated Circuits",
+      "reason": "This course has a high alignment score and offers a top-down approach that complements fundamental computer science interests.",
+      "average_grade": "A-",
       "workload": "medium",
       "enrollment_difficulty": "easy",
-      "class_times": "",
-      "comments": "This course is fundamental but generally has a moderate workload."
+      "class_times": [
+        "TuTh 09:30:00-10:59:00"
+      ],
+      "comments": "With an enrollment of 26 out of 30, this course is easy to enroll in. The medium workload is balanced by the high average grade."
     },
     {
-      "course_id": 16178,
-      "course_code": "COMPSCI 61A",
-      "title": "The Structure and Interpretation of Computer Programs",
-      "reason": "High alignment score and essential for programming principles.",
-      "average_grade": "",
+      "course_id": 28222,
+      "course_code": "EECS 151",
+      "title": "Introduction to Digital Design and Integrated Circuits",
+      "reason": "The course aligns well with the student's interests and is foundational in computer science.",
+      "average_grade": "B+",
       "workload": "medium",
-      "enrollment_difficulty": "easy",
-      "class_times": "",
-      "comments": "Fundamental programming course with a manageable workload for students."
+      "enrollment_difficulty": "medium",
+      "class_times": [
+        "TuTh 09:30:00-10:59:00"
+      ],
+      "comments": "With 116 enrolled out of 141, enrollment is moderate. The medium workload is suitable given the good average grade."
     },
     {
-      "course_id": 16166,
-      "course_code": "COMPSCI 70",
-      "title": "Discrete Mathematics and Probability Theory",
-      "reason": "Essential course for mathematics foundations in computer science.",
-      "average_grade": "",
-      "workload": "medium",
-      "enrollment_difficulty": "easy",
-      "class_times": "",
-      "comments": "Mathematical foundations can be challenging, but the workload is typically moderate."
-    },
-    {
-      "course_id": 29209,
-      "course_code": "COMPSCI 186",
-      "title": "Introduction to Database Systems",
-      "reason": "Good alignment and foundation in data management principles.",
+      "course_id": 28224,
+      "course_code": "EECS 151LB",
+      "title": "Field-Programmable Gate Array Laboratory",
+      "reason": "This course ties practical digital design with foundational concepts, showing good alignment with computer science.",
       "average_grade": "B+",
       "workload": "medium",
       "enrollment_difficulty": "easy",
-      "class_times": "",
-      "comments": "Provides a good overview of database concepts, with a manageable workload and average performance."
+      "class_times": [
+        "We 08:00:00-10:59:00"
+      ],
+      "comments": "With 17 out of 18 enrolled, the course is easy to enroll in. The medium workload reflects its practical nature."
+    },
+    {
+      "course_id": 28488,
+      "course_code": "EECS 126",
+      "title": "Probability and Random Processes",
+      "reason": "This course covers essential probability concepts that are important in the computer science field.",
+      "average_grade": "B+",
+      "workload": "high",
+      "enrollment_difficulty": "easy",
+      "class_times": [
+        "TuTh 11:00:00-12:29:00"
+      ],
+      "comments": "With 155 out of 157 enrolled, it's easy to join this course. The workload is high, yet students maintain a strong grade average."
     }
   ]
 }
